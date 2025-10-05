@@ -1,0 +1,39 @@
+{
+    "name": "@supp/supp",
+    "version": "0.1.0",
+    "description": "",
+    "files": [
+        "dist",
+        "supp"
+    ],
+    "type": "module",
+    "bin": {
+        "supp": "dist/src/cli.js"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "lint": "biome check",
+        "test": "vitest run"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "packageManager": "pnpm@10.16.1",
+    "devDependencies": {
+        "@biomejs/biome": "^2.2.5",
+        "@types/archiver": "^6.0.3",
+        "@types/node": "^24.6.2",
+        "@types/pngjs": "^6.0.5",
+        "typescript": "^5.9.3",
+        "vitest": "^3.2.4"
+    },
+    "dependencies": {
+        "@ltd/j-toml": "^1.38.0",
+        "archiver": "^7.0.1",
+        "commander": "^14.0.1",
+        "luabundle": "^1.7.0",
+        "luamin": "^1.0.4",
+        "pngjs": "^7.0.0",
+        "rimraf": "^6.0.1"
+    }
+}
