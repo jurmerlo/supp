@@ -69,7 +69,7 @@ const lib = program.command('lib').description('Supp library commands.');
 
 lib
   .command('bundle')
-  .description('Bundle the Waju library files.')
+  .description('Bundle the Supp library files.')
   .option('-e, --exclude [libraries...]', 'Specify the libraries you want to exclude from the bundle.')
   .option('-o, --out <string>', 'The path to save the bundle to relative to the current directory.')
   .option('-l, --luaVersion <string>', 'The Lua version to target. One of LuaJIT, 5.1, 5.2, 5.3.')
@@ -98,7 +98,7 @@ program
   .action(createLoveFile);
 
 program
-  .command('pack')
+  .command('atlas')
   .description('Pack images into a sprite atlas.')
   .option('-p, --project <string>')
   .action((options) => {

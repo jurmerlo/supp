@@ -99,8 +99,8 @@ function buildImportFile(dict) {
         }
         content += '\n';
     }
-    // Create the main Waju class.
-    content += '---@class waju.Waju\n';
+    // Create the main Supp class.
+    content += '---@class supp.Supp\n';
     content += '---@field VERSION string\n';
     for (const key in dict) {
         if (key === 'supp') {
@@ -116,7 +116,7 @@ function buildImportFile(dict) {
         }
     }
     content += '\n';
-    // Create the Waju class table.
+    // Create the Supp class table.
     content += 'return {\n';
     content += `  VERSION = '${pkg.version}',\n`;
     for (const key in dict) {

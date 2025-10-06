@@ -3,7 +3,6 @@ import Path from 'node:path';
 import { PNG } from 'pngjs';
 
 import type { Atlas } from './atlas.js';
-import type { Frame } from './frame.js';
 import type { Tileset } from './tileset.js';
 
 /**
@@ -58,45 +57,56 @@ export function saveTilesetImage(name: string, saveFolder: string, tileset: Tile
 }
 
 /**
- * Saves the JSON data to a file.
+ * Saves the Lua data to a file.
  * @param name The name of the file (without extension).
  * @param saveFolder The folder where the file will be saved.
  * @param atlas The created atlas containing the packed rectangles and image data.
  * @throws Will throw an error if writing fails.
  */
-export function saveJsonData(name: string, saveFolder: string, atlas: Atlas): void {
+export function saveLuaData(name: string, saveFolder: string, atlas: Atlas): void {
   // Ensure the save folder exists.
   if (!existsSync(saveFolder)) {
     mkdirSync(saveFolder, { recursive: true });
   }
 
-  const frames: Frame[] = [];
+  let content = 'local FrameData = {}\n\n';
+  content += 'FrameData.frames = {\n';
 
   for (const rect of atlas.packedRects) {
     const image = atlas.images.get(rect.name);
-    if (image) {
-      frames.push({
-        filename: rect.name,
-        frame: {
-          x: rect.x + Number(image.extrude),
-          y: rect.y + Number(image.extrude),
-          width: rect.width - Number(image.extrude) * 2,
-          height: rect.height - Number(image.extrude) * 2,
-        },
-        trimmed: image.trimmed,
-        sourceSize: {
-          x: image.sourceX,
-          y: image.sourceY,
-          width: image.sourceWidth,
-          height: image.sourceHeight,
-        },
-      });
+    if (!image) {
+      continue;
     }
+
+    content += `  {\n`;
+    content += `    filename = '${rect.name}',\n`;
+    content += `    rect = {\n`;
+    content += `      x = ${rect.x + Number(image.extrude)},\n`;
+    content += `      y = ${rect.y + Number(image.extrude)},\n`;
+    content += `      width = ${rect.width - Number(image.extrude) * 2},\n`;
+    content += `      height = ${rect.height - Number(image.extrude) * 2},\n`;
+    content += `    },\n`;
+    content += `    trimmed = ${image.trimmed},\n`;
+    content += `    sourceSize = {\n`;
+    content += `      x = ${image.sourceX},\n`;
+    content += `      y = ${image.sourceY},\n`;
+    content += `      width = ${image.sourceWidth},\n`;
+    content += `      height = ${image.sourceHeight},\n`;
+    content += `    },\n`;
+    content += `  },\n`;
   }
 
-  const path = Path.join(saveFolder, `${name}.json`);
-  let content = JSON.stringify({ frames: frames }, null, 2);
-  content += '\n';
+  content += '}\n\n';
+  content += 'FrameData.meta = {\n';
+  content += `  image = '${name}.png',\n`;
+  content += `  size = {\n`;
+  content += `    width = ${atlas.packedImage?.width || 0},\n`;
+  content += `    height = ${atlas.packedImage?.height || 0},\n`;
+  content += `  },\n`;
+  content += `}\n\n`;
+  content += 'return FrameData\n';
+
+  const path = Path.join(saveFolder, `${name}.lua`);
 
   try {
     writeFileSync(path, content);

@@ -28,9 +28,7 @@ export function buildProject(config, noAtlas = false, clean = false) {
         rimrafSync(outDir);
     }
     const assetsDir = Path.join(process.cwd(), config.assetsDir || 'assets');
-    if (!existsSync(assetsDir)) {
-        mkdirSync(assetsDir);
-    }
+    cpSync(assetsDir, Path.join(outDir, 'assets'), { recursive: true });
     if (!existsSync(outDir)) {
         mkdirSync(outDir);
     }

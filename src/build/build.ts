@@ -43,9 +43,7 @@ export function buildProject(config: Config, noAtlas = false, clean = false) {
 
   const assetsDir = Path.join(process.cwd(), config.assetsDir || 'assets');
 
-  if (!existsSync(assetsDir)) {
-    mkdirSync(assetsDir);
-  }
+  cpSync(assetsDir, Path.join(outDir, 'assets'), { recursive: true });
 
   if (!existsSync(outDir)) {
     mkdirSync(outDir);

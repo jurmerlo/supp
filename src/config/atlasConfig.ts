@@ -10,7 +10,7 @@ export type AtlasConfig = {
   /**
    * The folder to store the atlas in, relative to the config file.
    */
-  saveFolder: string;
+  outDir: string;
 
   /**
    * An array of folders containing images to include in the atlas, relative to the config file.

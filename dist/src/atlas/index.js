@@ -1,6 +1,6 @@
 import Path from 'node:path';
 import { Atlas } from './atlas.js';
-import { saveAtlasImage, saveJsonData, saveTilesetImage } from './save.js';
+import { saveAtlasImage, saveLuaData, saveTilesetImage } from './save.js';
 import { Tileset } from './tileset.js';
 /**
  * Packs atlases based on the provided configuration file.
@@ -42,7 +42,7 @@ function packAtlases(config) {
             continue;
         }
         // Create the save folder if it does not exist.
-        const saveFolder = Path.join(process.cwd(), atlasConfig.saveFolder);
+        const saveFolder = Path.join(process.cwd(), atlasConfig.outDir);
         // Save the atlas image.
         try {
             saveAtlasImage(atlasConfig.name, saveFolder, atlas);
@@ -51,13 +51,13 @@ function packAtlases(config) {
             process.stdout.write(`Error: Failed to save atlas image for "${atlasConfig.name}": ${error.message}\n`);
             continue;
         }
-        // Save the JSON data if required.
+        // Save the Lua data if required.
         if (!atlasConfig.noData) {
             try {
-                saveJsonData(atlasConfig.name, saveFolder, atlas);
+                saveLuaData(atlasConfig.name, saveFolder, atlas);
             }
             catch (error) {
-                process.stdout.write(`Error: Failed to save JSON data for "${atlasConfig.name}": ${error.message}\n`);
+                process.stdout.write(`Error: Failed to save Lua data for "${atlasConfig.name}": ${error.message}\n`);
                 continue;
             }
         }
