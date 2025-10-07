@@ -17,5 +17,5 @@
     "noUnusedParameters": true,
     "outDir": "dist",
   },
-  "include": ["src", "types" ],
+  "include": ["src", "types" ]
 }
