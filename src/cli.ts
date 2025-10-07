@@ -1,11 +1,10 @@
 import Path from 'node:path';
 import { Command } from 'commander';
-import pkg from '../package.json' with { type: 'json' };
 import { packAtlas } from './atlas/index.js';
 import { buildAndRun, buildProject, createLoveFile } from './build/build.js';
 import { bundleSupp } from './build/bundleSupp.js';
 import { readConfig } from './config/config.js';
-import { type LuaVersion, rootDir } from './utils.js';
+import { type LuaVersion, ROOT_DIR, VERSION } from './utils.js';
 
 type BundleOptions = {
   out?: string;
@@ -15,7 +14,7 @@ type BundleOptions = {
 
 function bundle({ out, exclude = [], luaVersion = 'LuaJIT' }: BundleOptions) {
   const outPath = out ? Path.join(process.cwd(), out) : process.cwd();
-  bundleSupp(rootDir, outPath, exclude, luaVersion);
+  bundleSupp(ROOT_DIR, outPath, exclude, luaVersion);
 }
 
 type BuildOptions = {
@@ -64,7 +63,7 @@ function atlas({ project }: { project?: string }) {
 }
 
 const program = new Command();
-program.name('Supp').description('Supp CLI').version(pkg.version);
+program.name('Supp').description('Supp CLI').version(VERSION);
 const lib = program.command('lib').description('Supp library commands.');
 
 lib

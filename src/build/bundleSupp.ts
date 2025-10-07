@@ -2,8 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import Path from 'node:path';
 import { bundleString } from 'luabundle';
 
-import pkg from '../../package.json' with { type: 'json' };
-import { LuaVersion } from '../utils.js';
+import { type LuaVersion, VERSION } from '../utils.js';
 
 const requireRegex = /require\(['"](.*)['"]\)/g;
 
@@ -25,7 +24,7 @@ local bundle = __bundle_require("__root")
 
 return bundle`;
 
-  const version = `-- Supp version: ${pkg.version}\n-- luacheck: ignore\n-- cSpell:ignore luabundle supp\n`;
+  const version = `-- Supp version: ${VERSION}\n-- luacheck: ignore\n-- cSpell:ignore luabundle supp\n`;
 
   ioBundle = version + ioBundle.replace('return __bundle_require("__root")', requireWithTypes);
 
@@ -146,7 +145,7 @@ function buildImportFile(dict: { [key: string]: string[] }): string {
 
   // Create the Supp class table.
   content += 'return {\n';
-  content += `  VERSION = '${pkg.version}',\n`;
+  content += `  VERSION = '${VERSION}',\n`;
 
   for (const key in dict) {
     if (key === 'supp') {
