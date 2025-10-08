@@ -1,0 +1,2 @@
+#!/bin/bash
+cd tools && pnpm install && pnpm build && cd ..
