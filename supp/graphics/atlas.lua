@@ -55,19 +55,19 @@ end
 ---@param name string The name of the frame.
 ---@param x number The x position to draw the frame.
 ---@param y number The y position to draw the frame.
----@param r number The rotation to draw the frame in radians.
----@param sx number The scale factor in the x direction.
----@param sy number The scale factor in the y direction.
----@param ox number The x offset for the frame.
----@param oy number The y offset for the frame.
+---@param r? number The rotation to draw the frame in radians.
+---@param sx? number The scale factor in the x direction.
+---@param sy? number The scale factor in the y direction.
+---@param ox? number The x offset for the frame.
+---@param oy? number The y offset for the frame.
 function Atlas:drawFrame(name, x, y, r, sx, sy, ox, oy)
   local frame = self:getFrame(name)
   if frame then
-    local offsetX = frame.sourceSize.width * (ox or 0.5) - frame.sourceSize.x
-    local offsetY = frame.sourceSize.height * (oy or 0.5) - frame.sourceSize.y
     local rotation = r or 0
     local scaleX = sx or 1
     local scaleY = sy or 1
+    local offsetX = frame.sourceSize.width * (ox or 0.5) - frame.sourceSize.x
+    local offsetY = frame.sourceSize.height * (oy or 0.5) - frame.sourceSize.y
     love.graphics.draw(self.image, frame.quad, x, y, rotation, scaleX, scaleY, offsetX, offsetY)
   end
 end

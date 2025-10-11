@@ -22,7 +22,7 @@ local Tween = Class:extend()
 ---@param to table
 local function createDataList(self, target, from, to)
   for key, fromValue in pairs(from) do
-    if target[key] ~= nil then
+    if target[key] then
       local toValue = to[key]
 
       if type(target[key] == 'number') then
