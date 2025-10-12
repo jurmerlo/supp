@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { Atlas } from './atlas.js';
 import type { AtlasConfig } from '../config/atlasConfig.js';
+import { Atlas } from './atlas.js';
 
 describe('Atlas', () => {
   let config: AtlasConfig;
@@ -9,7 +9,7 @@ describe('Atlas', () => {
   beforeAll(() => {
     config = {
       name: 'test',
-      saveFolder: 'out',
+      outDir: 'out',
       folders: ['./testFiles/atlas'],
       trimmed: true,
       extrude: 1,

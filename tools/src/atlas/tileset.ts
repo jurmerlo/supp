@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { PNG } from 'pngjs';
-import { Image } from './image.js';
 import type { TilesetConfig } from '../config/tilesetConfig.js';
+import { Image } from './image.js';
 
 export class Tileset {
   image: Image;

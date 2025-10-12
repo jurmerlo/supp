@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { Atlas } from './atlas.js';
 import type { AtlasConfig } from '../config/atlasConfig.js';
+import { Atlas } from './atlas.js';
 import { AtlasPacker } from './atlasPacker.js';
 
 describe('Packer', () => {
@@ -11,7 +11,7 @@ describe('Packer', () => {
   beforeEach(() => {
     config = {
       name: 'test',
-      saveFolder: 'out',
+      outDir: 'out',
       folders: ['./testFiles/atlas'],
       extrude: 0,
       trimmed: true,

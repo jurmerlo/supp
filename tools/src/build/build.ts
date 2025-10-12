@@ -51,10 +51,15 @@ export function buildProject(config: Config, noAtlas = false, clean = false) {
 
   const sourceDir = Path.join(process.cwd(), config.sourceDir || 'src');
   if (config.bundle) {
+    if (existsSync(Path.join(sourceDir, 'conf.lua'))) {
+      cpSync(Path.join(sourceDir, 'conf.lua'), Path.join(outDir, 'conf.lua'));
+    }
+
     const mainPath = Path.join(sourceDir, 'main.lua');
     let luaBundle = bundle(mainPath, {
       luaVersion: config.luaVersion || 'LuaJIT',
       paths: [Path.join(sourceDir, '?.lua')],
+      ignoredModuleNames: ['conf'],
     });
 
     if (config.minify) {
