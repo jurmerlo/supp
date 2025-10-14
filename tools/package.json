@@ -18,11 +18,11 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.18.3",
   "devDependencies": {
-    "@biomejs/biome": "^2.2.5",
+    "@biomejs/biome": "^2.2.6",
     "@types/archiver": "^6.0.3",
-    "@types/node": "^24.6.2",
+    "@types/node": "^24.7.2",
     "@types/pngjs": "^6.0.5",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
