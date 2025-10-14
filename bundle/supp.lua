@@ -45,6 +45,14 @@ local __bundle_require, __bundle_loaded, __bundle_register, __bundle_modules = (
 	return require, loaded, register, modules
 end)(require)
 __bundle_register("__root", function(require, _LOADED, __bundle_register, __bundle_modules)
+---supp.view files
+local View = require("supp.view.view")
+local Scaling = require("supp.view.scaling")
+
+---@class supp.view
+---@field View supp.view.View
+---@field Scaling supp.view.Scaling
+
 ---supp.tweening files
 local Tween = require("supp.tweening.tween")
 local Easing = require("supp.tweening.easing")
@@ -52,6 +60,14 @@ local Easing = require("supp.tweening.easing")
 ---@class supp.tweening
 ---@field Tween supp.tweening.Tween
 ---@field Easing supp.tweening.Easing
+
+---supp.math files
+local Rectangle = require("supp.math.rectangle")
+local Point = require("supp.math.point")
+
+---@class supp.math
+---@field Rectangle supp.math.Rectangle
+---@field Point supp.math.Point
 
 ---supp.graphics files
 local Color = require("supp.graphics.color")
@@ -64,30 +80,178 @@ local Animation = require("supp.graphics.animation")
 ---@field Animation supp.graphics.Animation
 
 ---supp files
+local Node = require("supp.node")
 local Class = require("supp.class")
 
 ---@class supp.Supp
 ---@field VERSION string
+---@field view supp.view
 ---@field tweening supp.tweening
+---@field math supp.math
 ---@field graphics supp.graphics
+---@field Node supp.Node
 ---@field Class supp.Class
 
 return {
   VERSION = '0.1.0',
+  view = {
+    View = View,
+    Scaling = Scaling,
+  },
   tweening = {
     Tween = Tween,
     Easing = Easing,
+  },
+  math = {
+    Rectangle = Rectangle,
+    Point = Point,
   },
   graphics = {
     Color = Color,
     Atlas = Atlas,
     Animation = Animation,
   },
+  Node = Node,
   Class = Class,
 }
 
 end)
 __bundle_register("supp.class", function(require, _LOADED, __bundle_register, __bundle_modules)
+-- luacheck: ignore
+--
+-- Based on the classic.lua library by rxi
+-- https://github.com/rxi/classic
+--
+-- Copyright (c) 2014, rxi
+-- Copyright (c) 2025, Jurmerlo
+--
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of
+-- this software and associated documentation files (the "Software"), to deal in
+-- the Software without restriction, including without limitation the rights to
+-- use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+-- of the Software, and to permit persons to whom the Software is furnished to do
+-- so, subject to the following conditions:
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
+-- 
+---@class supp.Class
+---@field super any
+local Class = {}
+Class.__index = Class
+
+---Creates a new instance of the class.
+---@param ... unknown Arguments to pass to the constructor.
+function Class:new(...)
+end
+
+
+---Extends this class.
+---@return any The new class.
+function Class:extend()
+  local cls = {}
+  for k, v in pairs(self) do
+    if k:find('__') == 1 then
+      cls[k] = v
+    end
+  end
+
+  cls.__index = cls
+  cls.super = self
+  setmetatable(cls, self)
+  return cls
+end
+
+
+---Implement part of another class.
+---@param ... unknown Classes to implement.
+function Class:implement(...)
+  for _, cls in pairs({ ... }) do
+    for k, v in pairs(cls) do
+      if self[k] == nil and type(v) == 'function' then
+        self[k] = v
+      end
+    end
+  end
+end
+
+
+---Check if this class is of type.
+---@param T supp.Class The class to check against.
+---@return boolean True if this class is of type T.
+function Class:is(T)
+  local mt = getmetatable(self)
+  while mt do
+    if mt == T then
+      return true
+    end
+    mt = getmetatable(mt)
+  end
+  return false
+end
+
+
+---Returns a string representation of the class.
+---@return string The string representation of the class.
+function Class:__tostring()
+  return 'Class'
+end
+
+
+---Creates a new instance of the class.
+---@param ... unknown Arguments to pass to the constructor.
+---@return supp.Class The new instance of the class.
+function Class:__call(...)
+  local obj = setmetatable({}, self)
+  ---@diagnostic disable-next-line: redundant-parameter
+  obj:new(...)
+  return obj
+end
+
+
+return Class
+
+end)
+__bundle_register("supp.node", function(require, _LOADED, __bundle_register, __bundle_modules)
+local Class = require("supp.Class")
+
+---@class supp.Node: supp.Class
+---@field active boolean
+---@overload fun(): supp.Node
+local Node = Class:extend()
+
+---Creates a new Node instance.
+function Node:new()
+  self.active = true
+end
+
+
+---Updates the Node instance.
+---@param dt number Delta time in seconds since the last update.
+function Node:update(dt)
+end
+
+
+---Draws the Node instance.
+function Node:draw()
+end
+
+
+---Destroys the Node instance.
+function Node:destroy()
+end
+
+
+return Node
+
+end)
+__bundle_register("supp.Class", function(require, _LOADED, __bundle_register, __bundle_modules)
 -- luacheck: ignore
 --
 -- Based on the classic.lua library by rxi
@@ -326,19 +490,19 @@ end
 ---@param name string The name of the frame.
 ---@param x number The x position to draw the frame.
 ---@param y number The y position to draw the frame.
----@param r number The rotation to draw the frame in radians.
----@param sx number The scale factor in the x direction.
----@param sy number The scale factor in the y direction.
----@param ox number The x offset for the frame.
----@param oy number The y offset for the frame.
+---@param r? number The rotation to draw the frame in radians.
+---@param sx? number The scale factor in the x direction.
+---@param sy? number The scale factor in the y direction.
+---@param ox? number The x offset for the frame.
+---@param oy? number The y offset for the frame.
 function Atlas:drawFrame(name, x, y, r, sx, sy, ox, oy)
   local frame = self:getFrame(name)
   if frame then
-    local offsetX = frame.sourceSize.width * (ox or 0.5) - frame.sourceSize.x
-    local offsetY = frame.sourceSize.height * (oy or 0.5) - frame.sourceSize.y
     local rotation = r or 0
     local scaleX = sx or 1
     local scaleY = sy or 1
+    local offsetX = frame.sourceSize.width * (ox or 0.5) - frame.sourceSize.x
+    local offsetY = frame.sourceSize.height * (oy or 0.5) - frame.sourceSize.y
     love.graphics.draw(self.image, frame.quad, x, y, rotation, scaleX, scaleY, offsetX, offsetY)
   end
 end
@@ -437,6 +601,125 @@ end
 
 
 return Color
+
+end)
+__bundle_register("supp.math.point", function(require, _LOADED, __bundle_register, __bundle_modules)
+local Class = require("supp.Class")
+
+---@class supp.math.Point: supp.Class
+---@field x number
+---@field y number
+---@overload fun(x: number, y: number): supp.math.Point
+local Point = Class:extend()
+
+---@type supp.math.Point[]
+local pool = {}
+
+---Get a point from the object pool.
+---@param x number?
+---@param y number?
+---@return supp.math.Point
+function Point.get(x, y)
+  x = x or 0
+  y = y or 0
+
+  ---@type supp.math.Point?
+  local p = table.remove(pool)
+
+  if p then
+    p.x = x
+    p.y = y
+    return p
+  else
+    return Point(x, y)
+  end
+end
+
+
+---Put a point back into the object pool.
+---@param p supp.math.Point
+function Point.put(p)
+  table.insert(pool, p)
+end
+
+
+---Create a new Point instance.
+---@param x number?
+---@param y number?
+function Point:new(x, y)
+  self.x = x or 0
+  self.y = y or 0
+end
+
+
+---Check if two points are the same.
+---@param other supp.math.Point
+---@return boolean
+function Point:equals(other)
+  return self.x == other.x and self.y == other.y
+end
+
+
+---Clone this point.
+---@param out supp.math.Point? Optional point to copy into.
+---@return supp.math.Point
+function Point:clone(out)
+  if out == nil then
+    out = Point.get()
+  end
+  out.x = self.x
+  out.y = self.y
+
+  return out
+end
+
+
+return Point
+
+end)
+__bundle_register("supp.math.rectangle", function(require, _LOADED, __bundle_register, __bundle_modules)
+local Class = require("supp.Class")
+
+---@class supp.math.Rectangle: supp.Class
+---@overload fun(x: number, y: number, width: number, height: number): supp.math.Rectangle
+---@field x number
+---@field y number
+---@field width number
+---@field height number
+local Rectangle = Class:extend()
+
+---Create a new rectangle instance.
+---@param x number
+---@param y number
+---@param width number
+---@param height number
+function Rectangle:new(x, y, width, height)
+  self.x = x or 0
+  self.y = y or 0
+  self.width = width or 0
+  self.height = height or 0
+end
+
+
+---Check if this rectangle contains a point.
+---@param px number
+---@param py number
+---@return boolean # true if the point is inside the rectangle.
+function Rectangle:contains(px, py)
+  return px >= self.x and px < self.x + self.width and py >= self.y and py < self.y + self.height
+end
+
+
+---Check if two rectangles intersect.
+---@param other supp.math.Rectangle
+---@return boolean # true if the rectangles intersect.
+function Rectangle:intersects(other)
+  return not (other.x > self.x + self.width or other.x + other.width < self.x or other.y > self.y + self.height or
+             other.y + other.height < self.y)
+end
+
+
+return Rectangle
 
 end)
 __bundle_register("supp.tweening.easing", function(require, _LOADED, __bundle_register, __bundle_modules)
@@ -951,7 +1234,7 @@ local Tween = Class:extend()
 ---@param to table
 local function createDataList(self, target, from, to)
   for key, fromValue in pairs(from) do
-    if target[key] ~= nil then
+    if target[key] then
       local toValue = to[key]
 
       if type(target[key] == 'number') then
@@ -1055,6 +1338,148 @@ end
 
 
 return Tween
+
+end)
+__bundle_register("supp.view.scaling", function(require, _LOADED, __bundle_register, __bundle_modules)
+-- A module for handling view scaling in a game.
+---@class supp.view.Scaling
+local Scaling = {}
+
+---Scale the view to fit the window.
+---@param designWidth number The width the game is designed for.
+---@param designHeight number The height the game is designed for.
+---@return number width The scaled width.
+---@return number height The scaled height.
+---@return number scaleX The scale factor in the horizontal direction.
+---@return number scaleY The scale factor in the vertical direction.
+---@return number offsetX The horizontal offset to center the view.
+---@return number offsetY The vertical offset to center the view.
+function Scaling.scaleToFit(designWidth, designHeight)
+  local windowWidth = love.graphics.getWidth()
+  local windowHeight = love.graphics.getHeight()
+
+  local designRatio = designWidth / designHeight
+  local windowRatio = windowWidth / windowHeight
+
+  ---@type number
+  local width
+  ---@type number
+  local height
+
+  if windowRatio < designRatio then
+    width = designWidth
+    height = math.ceil(width / windowRatio)
+  else
+    height = designHeight
+    width = math.ceil(height * windowRatio)
+  end
+
+  local scaleFactor = windowWidth / width
+
+  local xOffset = (windowWidth - designWidth * scaleFactor) * 0.5
+  local yOffset = (windowHeight - designHeight * scaleFactor) * 0.5
+
+  return width, height, scaleFactor, scaleFactor, xOffset, yOffset
+end
+
+
+return Scaling
+
+end)
+__bundle_register("supp.view.view", function(require, _LOADED, __bundle_register, __bundle_modules)
+local Scaling = require("supp.view.scaling")
+
+--- A module for managing the game view, including scaling and rendering to a canvas.
+---@class supp.view.View
+local View = {}
+
+---The width the game is designed for.
+---@type number
+local designWidth = 0
+
+---The height the game is designed for.
+---@type number
+local designHeight = 0
+
+---The actual view width after scaling.
+---@type number
+local viewWidth = 0
+
+---The actual view height after scaling.
+---@type number
+local viewHeight = 0
+
+---The scale factor in the horizontal direction.
+---@type number
+local viewScaleX = 1
+
+---The scale factor in the vertical direction.
+---@type number
+local viewScaleY = 1
+
+---The horizontal offset to center the view.
+---@type number
+local viewOffsetX = 0
+
+---The vertical offset to center the view.
+---@type number
+local viewOffsetY = 0
+
+---The canvas used for rendering the view.
+---@type love.Canvas
+local canvas = nil
+
+---Initialize the view with a design width and height.
+---@param width number The design width in pixels.
+---@param height number The design height in pixels.
+function View.init(width, height)
+  designWidth = width
+  designHeight = height
+  View.scaleToWindow()
+end
+
+
+---Scale the view to fit the window.
+function View.scaleToWindow()
+  local w, h, sx, sy, ox, oy = Scaling.scaleToFit(designWidth, designHeight)
+  viewWidth, viewHeight, viewScaleX, viewScaleY, viewOffsetX, viewOffsetY = w, h, sx, sy, ox, oy
+
+  if canvas then
+    canvas:release()
+  end
+  canvas = love.graphics.newCanvas(viewWidth, viewHeight)
+end
+
+
+---Set the active canvas to the view canvas.
+---@param clear? boolean If true, clear the canvas.
+function View.setCanvas(clear)
+  love.graphics.setCanvas(canvas)
+
+  if clear then
+    love.graphics.clear(0, 0, 0, 1)
+  end
+end
+
+
+---Draw the view canvas to the screen.
+function View.drawCanvas()
+  love.graphics.setCanvas()
+  love.graphics.clear()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(canvas, viewOffsetX, viewOffsetY, 0, viewScaleX, viewScaleY)
+end
+
+
+---Get the view width and height.
+---@return number width The view width in pixels.
+---@return number height The view height in pixels.
+function View.getViewSize()
+  return viewWidth, viewHeight
+end
+
+
+return View
 
 end)
 

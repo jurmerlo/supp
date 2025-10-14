@@ -135,8 +135,8 @@ function buildImportFile(dict: { [key: string]: string[] }): string {
     const path = split[split.length - 1];
     content += `---@field ${path} ${key}\n`;
   }
-  if (dict['supp']) {
-    for (const name of dict['supp']) {
+  if (dict.supp) {
+    for (const name of dict.supp) {
       content += `---@field ${name} supp.${name}\n`;
     }
   }
@@ -160,8 +160,8 @@ function buildImportFile(dict: { [key: string]: string[] }): string {
     }
     content += '  },\n';
   }
-  if (dict['supp']) {
-    for (const name of dict['supp']) {
+  if (dict.supp) {
+    for (const name of dict.supp) {
       content += `  ${name} = ${name},\n`;
     }
   }
